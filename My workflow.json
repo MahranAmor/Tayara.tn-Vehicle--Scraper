@@ -1,0 +1,265 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        704,
+        144
+      ],
+      "id": "014f0b19-92c9-4e10-a85a-87a206c86e09",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "6tTjPCjhLmoEJvA0",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=voici le data scraper :  {{ $json.data }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Tu es un agent expert en traitement de données extraites de sites web.\nTa mission est de nettoyer, structurer et clarifier les informations brutes issues du scraping.\nTu dois rendre les données plus lisibles, plus cohérentes et prêtes à être organisées dans un tableau (type CSV ou Google Sheets).\nLes données concernent des voitures d’occasion : tu dois identifier clairement les champs importants comme :\n\nMarque\n\nModèle\n\nAnnée\n\nKilométrage\n\nPrix\n\nÉtat\n\nCarburant\n\nBoîte de vitesse\n\nLocalisation\n\nDescription\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "0ce29dd2-0206-402f-972c-dd80bbad35c7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"marque\": { \"type\": \"string\", \"description\": \"Nom du constructeur automobile, ex: Toyota, Renault, Peugeot\" },\n      \"modele\": { \"type\": \"string\", \"description\": \"Nom du modèle du véhicule, ex: Yaris, Clio, 308\" },\n      \"annee\": { \"type\": \"string\", \"description\": \"Année de fabrication, ex: 2018, 2020\" },\n      \"kilometrage\": { \"type\": \"string\", \"description\": \"Kilométrage du véhicule, ex: 45000 km\" },\n      \"carburant\": { \"type\": \"string\", \"description\": \"Type de carburant, ex: Essence, Diesel, Hybride, Electrique\" },\n      \"prix\": { \"type\": \"string\", \"description\": \"Prix du véhicule en euros\" }\n    },\n    \"required\": [\"marque\", \"modele\", \"annee\", \"kilometrage\", \"carburant\", \"prix\"]\n  }\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        144
+      ],
+      "id": "de4556d4-15ca-44dc-8898-fdd1a2c04d46",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        912,
+        352
+      ],
+      "id": "f81e285f-6c76-4ff4-8812-b12ea814dec7",
+      "name": "Mistral Cloud Chat Model1",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "HnInc8RCyyLyE1l3",
+          "name": "Mistral Cloud account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -80
+      ],
+      "id": "dfe6100a-f6c3-4379-8799-67e94a6eeada",
+      "name": "When chat message received",
+      "webhookId": "e1163c13-083b-4f2a-9663-008da03805a3"
+    },
+    {
+      "parameters": {
+        "url": "={{$json[\"url\"]}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        -80
+      ],
+      "id": "18414a74-e803-4601-bad8-6010bbddc21f",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "JyjZTjdcAsjoIRRA",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const pages = [];\nfor (let i = 1; i <= 20; i++) {\n    pages.push({\n        json: {\n            page: i,\n            url: `https://r.jina.ai/https://www.tayara.tn/ads/c/V%C3%A9hicules/?page=${i}`\n        }\n    });\n}\nreturn pages;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        -80
+      ],
+      "id": "ea858fd4-56aa-4b07-9cba-8bca0b046ebb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Vérifier si on a des données\nif (!$json || $json.length === 0) {\n    return [{\n        json: {\n            error: \"Page vide\",\n            page: \"unknown\",\n            skip: true\n        }\n    }];\n}\n\n// Si données OK, passer à l'agent\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -80
+      ],
+      "id": "9f1ad755-ee1e-44f7-a8bd-ffe4225537f6",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "title": "tayara_voitures.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1088,
+        -80
+      ],
+      "id": "73e6e23d-c75e-4ce4-9128-a529cfa073a2",
+      "name": "Create spreadsheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Ydq8cXapqeuAeatV",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ff80c37e-580d-4665-a2e6-0bbedf7d11cd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dcfc3e93082212bcdebbe41b3d9de9e6dd6604ee20d7ec80b86da2f1e15ea708"
+  },
+  "id": "Lk205MNTsWfYEPcd",
+  "tags": []
+}
