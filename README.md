@@ -1,92 +1,75 @@
 🚗 Tayara Vehicle Scraper
-Description
-Workflow automatisé n8n pour extraire et structurer les annonces de véhicules depuis Tayara.tn. Utilise l'intelligence artificielle pour nettoyer et organiser les données en format CSV prêt à l'analyse.
-✨ Fonctionnalités
-🔄 Scraping Automatisé
+Solution complète pour extraire et structurer les annonces de véhicules depuis Tayara.tn, en offrant deux méthodes complémentaires :
+1️⃣ Workflow automatisé n8n
+2️⃣ Script Python autonome
 
-Multi-pages : Scrape automatiquement 1 à 30+ pages
-Robuste : Continue même si certaines pages échouent
-Délais intelligents : Évite la surcharge serveur avec pauses automatiques
-Retry automatique : Retente les requêtes échouées
+✨ Fonctionnalités générales
 
-🤖 IA de Nettoyage
+Scraping multi-pages : 1 à 30+ pages, avec reprise automatique en cas d’erreurs
 
-Extraction intelligente des champs clés :
+Nettoyage intelligent des champs clés (marque, modèle, année, prix, carburant, boîte, localisation, etc.)
 
-Marque et modèle du véhicule
-Année de fabrication
-Kilométrage
-Prix en dinars tunisiens
-Type de carburant
-Boîte de vitesse
-État du véhicule
-Localisation géographique
+Export CSV prêt à l’analyse (Excel/Google Sheets)
 
+Délais intelligents et retry automatique pour protéger le serveur
 
-Normalisation des formats de données
-Validation et correction automatique
+🛠️ Méthodes disponibles
+1️⃣ Workflow n8n
 
-📊 Export Structuré
+Automatisation totale grâce à n8n
 
-Format CSV compatible Excel/Google Sheets
-Colonnes organisées et nommées clairement
-Headers automatiques
-Données prêtes à l'analyse
+Boucles, pauses intelligentes, API Jina.ai pour le scraping
 
-🛠️ Technologies Utilisées
+Traitement des données avec un agent IA (Mistral)
 
-n8n - Automation workflow
-Jina.ai - Web scraping API
-Mistral AI - Processing et nettoyage des données
-JavaScript - Logique de boucles et manipulation
+Idéal pour un usage sans code et exécutions planifiées
 
-📋 Configuration
-Prérequis
+2️⃣ Script Python
 
-Instance n8n active
-Accès à Jina.ai API
-Modèle Mistral configuré
+Méthode alternative pour les développeurs préférant le code
 
-Structure du Workflow
-Function Node (Pages) → Loop Over Items → HTTP Request → Wait Node → AI Agent → Create Spreadsheet
-Paramètres Configurables
+Basée sur requests et BeautifulSoup
 
-Nombre de pages : Modifier dans le Function Node
-Délai entre requêtes : Ajustable dans Wait Node
-Champs d'extraction : Personnalisables dans l'Agent IA
+Personnalisable pour ajouter des filtres, changer de format d’export ou intégrer à d’autres projets
 
-🚀 Installation
+Convient à une exécution ponctuelle ou intégrée dans un pipeline data
 
-Importer le workflow dans n8n
-Configurer vos credentials API
-Ajuster le nombre de pages souhaité
-Lancer l'exécution
+📋 Prérequis
+
+n8n : instance active + credentials Jina.ai + modèle Mistral configuré
+
+Python : environnement Python 3, bibliothèques requests, beautifulsoup4, csv installées
+
+🚀 Installation rapide
+
+Option n8n : importer le workflow, configurer les clés API, définir le nombre de pages et lancer.
+
+Option Python : exécuter le script sur votre machine ou serveur après installation des dépendances.
 
 📈 Performances
 
-~20 pages en 2-3 minutes
-Taux de réussite : >95%
-Données structurées : 100% des résultats valides
+~20 pages traitées en 2–3 minutes
 
-🎯 Cas d'Usage
+Taux de réussite >95 %
 
-Analyse de marché automobile tunisien
-Veille concurrentielle prix véhicules
-Études statistiques parc automobile
+Données structurées et valides à 100 %
+
+🎯 Cas d’usage
+
+Analyse du marché automobile tunisien
+
+Veille concurrentielle (prix et disponibilité)
+
+Études statistiques du parc automobile
+
 Base de données pour revendeurs
-Recherche académique mobilité urbaine
 
-⚠️ Respect des Conditions
+Recherche académique en mobilité urbaine
 
-Usage éthique et respectueux des serveurs
+⚠️ Respect des conditions d’utilisation
+
+Scraping éthique et respectueux des serveurs
+
 Délais appropriés entre requêtes
-Conformité aux conditions d'utilisation Tayara.tn
-Données publiques uniquement
 
-🔧 Personnalisation
-Le workflow peut être adapté pour :
-
-D'autres catégories Tayara (immobilier, électronique...)
-Sites similaires (Tunisie Annonces, etc.)
-Exports différents (JSON, XML, Base de données)
-Langues multiples
+Données strictement publiques
